@@ -22,7 +22,7 @@
 	    python3.6 global_merger_nvidia.py
 6)  To complete steps 3 & 4, there are separate targets within the
     Makefile_split_and_merge_new such as: 
-            make -f Makefile_split_and_merge_new dir_0_cBenchtrain 
+            make -f Makefile_split_and_merge_new dir_0_cBenchtrain. 
     This will create a separate directory called run_0_cBenchtrain after running 
     steps 3 & 4.
 6)  Run step 5 for all the required BM logs.
