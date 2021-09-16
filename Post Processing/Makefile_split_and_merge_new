@@ -1,0 +1,423 @@
+# File		:		Makefile_split_and_merge_new
+# Author	: 		Deepthi Nanduri (Part of script adopted from Varun Anand et al. [])
+#
+# This Makefile helps automate the process of : 
+# 1			: 		Creating separate directories for each frequency
+# 2			: 		Creating split frequency files
+# 3			: 		Creating global merged logs
+# 4			: 		Copy merged log to run_<fan_speed> directory to combine with TEST BM merged log
+
+
+create_all_folders: create_cBenchtrain_folders create_cBenchtest_folders create_post_run_dirs
+
+clean_all_dirs: clean_cBenchtrain_dirs clean_cBenchtest_dirs clean_run_dirs
+
+create_cBenchtrain_folders:	dir_0_cBenchtrain dir_32_cBenchtrain dir_64_cBenchtrain dir_128_cBenchtrain dir_160_cBenchtrain dir_192_cBenchtrain dir_255_cBenchtrain # ALL PWMs 
+
+create_cBenchtest_folders:	dir_0_cBenchtest dir_32_cBenchtest dir_64_cBenchtest dir_128_cBenchtest dir_160_cBenchtest dir_192_cBenchtest dir_255_cBenchtest # ALL PWMs
+
+create_post_run_dirs:	create_run_0_dir create_run_32_dir create_run_64_dir create_run_128_dir create_run_160_dir create_run_192_dir create_run_255_dir # ALL
+
+# Commands to remove previously created directories
+clean_cBenchtrain_dirs: clean_run_0_cBenchtrain clean_run_32_cBenchtrain clean_run_64_cBenchtrain clean_run_128_cBenchtrain clean_run_160_cBenchtrain clean_run_192_cBenchtrain clean_run_255_cBenchtrain
+clean_cBenchtest_dirs: clean_run_0_cBenchtest clean_run_32_cBenchtest clean_run_64_cBenchtest clean_run_128_cBenchtest clean_run_160_cBenchtest clean_run_192_cBenchtest clean_run_255_cBenchtest
+clean_run_dirs: clean_run_0_dir clean_run_32_dir clean_run_64_dir clean_run_128_dir clean_run_160_dir clean_run_192_dir clean_run_255_dir
+
+# Commands to create all directories for a particular fan PWM
+create_all_dir_0: dir_0_cBenchtrain dir_0_cBenchtest create_run_0_dir
+create_all_dir_32: dir_32_cBenchtrain dir_32_cBenchtest create_run_32_dir
+create_all_dir_64: dir_64_cBenchtrain dir_64_cBenchtest create_run_64_dir
+create_all_dir_128: dir_128_cBenchtrain dir_128_cBenchtest create_run_128_dir
+create_all_dir_160: dir_160_cBenchtrain dir_160_cBenchtest create_run_160_dir
+create_all_dir_192: dir_192_cBenchtrain dir_192_cBenchtest create_run_192_dir
+create_all_dir_255: dir_255_cBenchtrain dir_255_cBenchtest create_run_255_dir
+
+# Commands to clean all directories for a particular fan PWM
+clean_all_dir_0: clean_run_0_cBenchtrain clean_run_0_cBenchtest clean_run_0_dir
+clean_all_dir_32: clean_run_32_cBenchtrain clean_run_32_cBenchtest clean_run_32_dir
+clean_all_dir_64: clean_run_64_cBenchtrain clean_run_64_cBenchtest clean_run_64_dir
+clean_all_dir_128: clean_run_128_cBenchtrain clean_run_128_cBenchtest clean_run_128_dir
+clean_all_dir_160: clean_run_160_cBenchtrain clean_run_160_cBenchtest clean_run_160_dir
+clean_all_dir_192: clean_run_192_cBenchtrain clean_run_192_cBenchtest clean_run_192_dir
+clean_all_dir_255: clean_run_255_cBenchtrain clean_run_255_cBenchtest clean_run_255_dir
+
+# Define Filenames for each .dat file based on fan speed                   # This is the name that will be given to the .dat file that is the output from the data-collection step 
+FILE_0 := power_a57_cBenchtrain_0.dat                                      # This file is also fed to the plotter script for plotting graphs 
+FILE_32 := power_a57_cBenchtrain_32.dat
+FILE_64 := power_a57_cBenchtrain_64.dat
+FILE_128 := power_a57_cBenchtrain_128.dat
+FILE_160 := power_a57_cBenchtrain_160.dat
+FILE_192 := power_a57_cBenchtrain_192.dat
+FILE_255 := power_a57_cBenchtrain_255.dat
+
+# Define variable to hold global merger python script
+MERGER_SCRIPT := global_merger_cBench.py
+
+# Define variables to hold path for all .dat files
+FILEPATH_0 := $(shell readlink -f $(FILE_0))
+FILEPATH_32 := $(shell readlink -f $(FILE_32))
+FILEPATH_64 := $(shell readlink -f $(FILE_64))
+FILEPATH_128 := $(shell readlink -f $(FILE_128))
+FILEPATH_160 := $(shell readlink -f $(FILE_160))
+FILEPATH_192 := $(shell readlink -f $(FILE_192))
+FILEPATH_255 := $(shell readlink -f $(FILE_255))
+
+# Define variable to hold path of global merger python script
+MERGER_SCRIPT_PATH := $(shell readlink -f $(MERGER_SCRIPT))
+
+# Create directory to split and merge data files : Fan Speed = 0
+dir_0_cBenchtrain:
+	mkdir run_0_cBenchtrain;\
+	cd run_0_cBenchtrain;\
+	cp -r $(FILEPATH_0) .;\
+	cd ..;\
+	# Splitting .dat into individual BM+freq logs
+	python3.6 splitter_freq.py $(FILE_0) run_0_cBenchtrain;\
+	# Merging all BM+freq into one global merged log
+	python3.6 $(MERGER_SCRIPT) run_0_cBenchtrain cBenchtrain_0;\
+	# Copy file onto a separate folder to combine with TEST BM merged log
+	cp -r run_0_cBenchtrain/power_measurement_merged_global.txt power_measurement_merged_global_tr0.txt
+
+# Command to delete directory created during previous run
+clean_run_0_cBenchtrain:
+	rm -rf run_0_cBenchtrain
+
+# Create directory to split and merge data files : Fan Speed = 32
+dir_32_cBenchtrain:
+	mkdir run_32_cBenchtrain;\
+	cd run_32_cBenchtrain;\
+	cp -r $(FILEPATH_32) .;\
+	cd ..;\
+	# Splitting .dat into individual BM+freq logs
+	python3.6 splitter_freq.py $(FILE_32) run_32_cBenchtrain;\
+	# Merging all BM+freq into one global merged log
+	python3.6 $(MERGER_SCRIPT) run_32_cBenchtrain cBenchtrain_32;\
+	# Copy file onto a separate folder to combine with TEST BM merged log
+	cp -r run_32_cBenchtrain/power_measurement_merged_global.txt power_measurement_merged_global_tr32.txt
+
+# Command to delete directory created during previous run
+clean_run_32_cBenchtrain:
+	rm -rf run_32_cBenchtrain
+
+# Create directory to split and merge data files : Fan Speed = 64
+dir_64_cBenchtrain:
+	mkdir run_64_cBenchtrain;\
+	cd run_64_cBenchtrain;\
+	cp -r $(FILEPATH_64) .;\
+	cd ..;\
+	# Splitting .dat into individual BM+freq logs
+	python3.6 splitter_freq.py $(FILE_64) run_64_cBenchtrain;\
+	# Merging all BM+freq into one global merged log
+	python3.6 $(MERGER_SCRIPT) run_64_cBenchtrain cBenchtrain_64;\
+	# Copy file onto a separate folder to combine with TEST BM merged log
+	cp -r run_64_cBenchtrain/power_measurement_merged_global.txt power_measurement_merged_global_tr64.txt
+
+# Command to delete directory created during previous run
+clean_run_64_cBenchtrain:
+	rm -rf run_64_cBenchtrain
+
+# Create directory to split and merge data files : Fan Speed = 128
+dir_128_cBenchtrain:
+	mkdir run_128_cBenchtrain;\
+	cd run_128_cBenchtrain;\
+	cp -r $(FILEPATH_128) .;\
+	cd ..;\
+	# Splitting .dat into individual BM+freq logs
+	python3.6 splitter_freq.py $(FILE_128) run_128_cBenchtrain;\
+	# Merging all BM+freq into one global merged log
+	python3.6 $(MERGER_SCRIPT) run_128_cBenchtrain cBenchtrain_128;\
+	# Copy file onto a separate folder to combine with TEST BM merged log
+	cp -r run_128_cBenchtrain/power_measurement_merged_global.txt power_measurement_merged_global_tr128.txt
+
+# Command to delete directory created during previous run
+clean_run_128_cBenchtrain:
+	rm -rf run_128_cBenchtrain
+
+# Create directory to split and merge data files : Fan Speed = 160
+dir_160_cBenchtrain:
+	mkdir run_160_cBenchtrain;\
+	cd run_160_cBenchtrain;\
+	cp -r $(FILEPATH_160) .;\
+	cd ..;\
+	# Splitting .dat into individual BM+freq logs
+	python3.6 splitter_freq.py $(FILE_160) run_160_cBenchtrain;\
+	# Merging all BM+freq into one global merged log
+	python3.6 $(MERGER_SCRIPT) run_160_cBenchtrain cBenchtrain_160;\
+	# Copy file onto a separate folder to combine with TEST BM merged log
+	cp -r run_160_cBenchtrain/power_measurement_merged_global.txt power_measurement_merged_global_tr160.txt
+
+# Command to delete directory created during previous run
+clean_run_160_cBenchtrain:
+	rm -rf run_160_cBenchtrain
+
+# Create directory to split and merge data files : Fan Speed = 192
+dir_192_cBenchtrain:
+	mkdir run_192_cBenchtrain;\
+	cd run_192_cBenchtrain;\
+	cp -r $(FILEPATH_192) .;\
+	cd ..;\
+	# Splitting .dat into individual BM+freq logs
+	python3.6 splitter_freq.py $(FILE_192) run_192_cBenchtrain;\
+	# Merging all BM+freq into one global merged log
+	python3.6 $(MERGER_SCRIPT) run_192_cBenchtrain cBenchtrain_192;\
+	# Copy file onto a separate folder to combine wcBenchtrainith TEST BM merged log
+	cp -r run_192_cBenchtrain/power_measurement_merged_global.txt power_measurement_merged_global_tr192.txt
+
+# Command to delete directory created during previous run
+clean_run_192_cBenchtrain:
+	rm -rf run_192_cBenchtrain
+
+# Create directory to split and merge data files : Fan Speed = 32
+dir_255_cBenchtrain:
+	mkdir run_255_cBenchtrain;\
+	cd run_255_cBenchtrain;\
+	cp -r $(FILEPATH_255) .;\
+	cd ..;\
+	# Splitting .dat into individual BM+freq logs
+	python3.6 splitter_freq.py $(FILE_255) run_255_cBenchtrain;\
+	# Merging all BM+freq into one global merged log
+	python3.6 $(MERGER_SCRIPT) run_255_cBenchtrain cBenchtrain_255;\
+	# Copy file onto a separate folder to combine with TEST BM merged log
+	cp -r run_255_cBenchtrain/power_measurement_merged_global.txt power_measurement_merged_global_tr255.txt
+
+# Command to delete directory created during previous run
+clean_run_255_cBenchtrain:
+	rm -rf run_255_cBenchtrain
+
+# Define Filenames for each .dat file based on fan speed
+FILE_N0 := power_a57_cBenchtest_0.dat
+FILE_N32 := power_a57_cBenchtest_32.dat
+FILE_N64 := power_a57_cBenchtest_64.dat
+FILE_N128 := power_a57_cBenchtest_128.dat
+FILE_N160 := power_a57_cBenchtest_160.dat
+FILE_N192 := power_a57_cBenchtest_192.dat
+FILE_N255 := power_a57_cBenchtest_255.dat
+
+# Define variables to hold path for all .dat files
+FILEPATH_N0 := $(shell readlink -f $(FILE_N0))
+FILEPATH_N32 := $(shell readlink -f $(FILE_N32))
+FILEPATH_N64 := $(shell readlink -f $(FILE_N64))
+FILEPATH_N128 := $(shell readlink -f $(FILE_N128))
+FILEPATH_N160 := $(shell readlink -f $(FILE_N160))
+FILEPATH_N192 := $(shell readlink -f $(FILE_N192))
+FILEPATH_N255 := $(shell readlink -f $(FILE_N255))
+
+# Define variable to hold path of global merger python script
+#MERGER_SCRIPT_PATH := $(shell readlink -f $(MERGER_SCRIPT))
+
+# Create directory to split and merge data files : Fan Speed = 0
+dir_0_cBenchtest:
+	mkdir run_0_cBenchtest;\
+	cd run_0_cBenchtest;\
+	cp -r $(FILEPATH_N0) .;\
+	cd ..;\
+	# Splitting .dat into individual BM+freq logs
+	python3.6 splitter_freq.py $(FILE_N0) run_0_cBenchtest;\
+	# Merging all BM+freq into one global merged log
+	python3.6 $(MERGER_SCRIPT) run_0_cBenchtest cBenchtest_0;\
+	# Copy file onto a separate folder to combine with TEST BM merged log
+	cp -r run_0_cBenchtest/power_measurement_merged_global.txt power_measurement_merged_global_te0.txt
+
+# Command to delete directory created during previous run
+clean_run_0_cBenchtest:
+	rm -rf run_0_cBenchtest
+
+# Create directory to split and merge data files : Fan Speed = 32
+dir_32_cBenchtest:
+	mkdir run_32_cBenchtest;\
+	cd run_32_cBenchtest;
+	cp -r $(FILEPATH_N32) .;\
+	cd ..;\
+	# Splitting .dat into individual BM+freq logs
+	python3.6 splitter_freq.py $(FILE_N32) run_32_cBenchtest;\
+	# Merging all BM+freq into one global merged log
+	python3.6 $(MERGER_SCRIPT) run_32_cBenchtest cBenchtest_32
+	# Copy file onto a separate folder to combine with TEST BM merged log
+	cp -r run_32_cBenchtest/power_measurement_merged_global.txt power_measurement_merged_global_te32.txt
+
+# Command to delete directory created during previous run
+clean_run_32_cBenchtest:
+	rm -rf run_32_cBenchtest
+
+# Create directory to split and merge data files : Fan Speed = 64
+dir_64_cBenchtest:
+	mkdir run_64_cBenchtest;\
+	cd run_64_cBenchtest;\
+	cp -r $(FILEPATH_N64) .;\
+	cd ..;\
+	# Splitting .dat into individual BM+freq logs
+	python3.6 splitter_freq.py $(FILE_N64) run_64_cBenchtest;\
+	# Merging all BM+freq into one global merged log
+	python3.6 $(MERGER_SCRIPT) run_64_cBenchtest cBenchtest_64;\
+	# Copy file onto a separate folder to combine with TEST BM merged log
+	cp -r run_64_cBenchtest/power_measurement_merged_global.txt power_measurement_merged_global_te64.txt
+
+# Command to delete directory created during previous run
+clean_run_64_cBenchtest:
+	rm -rf run_64_cBenchtest
+
+# Create directory to split and merge data files : Fan Speed = 128
+dir_128_cBenchtest:
+	mkdir run_128_cBenchtest;\
+	cd run_128_cBenchtest;\
+	cp -r $(FILEPATH_N128) .;\
+	cd ..;\
+	# Splitting .dat into individual BM+freq logs
+	python3.6 splitter_freq.py $(FILE_N128) run_128_cBenchtest;\
+	# Merging all BM+freq into one global merged log
+	python3.6 $(MERGER_SCRIPT) run_128_cBenchtest cBenchtest_128;\
+	# Copy file onto a separate folder to combine with TEST BM merged log
+	cp -r run_128_cBenchtest/power_measurement_merged_global.txt power_measurement_merged_global_te128.txt
+
+# Command to delete directory created during previous run
+clean_run_128_cBenchtest:
+	rm -rf run_128_cBenchtest
+
+# Create directory to split and merge data files : Fan Speed = 160
+dir_160_cBenchtest:
+	mkdir run_160_cBenchtest;\
+	cd run_160_cBenchtest;\
+	cp -r $(FILEPATH_N160) .;\
+	cd ..;\
+	# Splitting .dat into individual BM+freq logs
+	python3.6 splitter_freq.py $(FILE_N160) run_160_cBenchtest;\
+	# Merging all BM+freq into one global merged log
+	python3.6 $(MERGER_SCRIPT) run_160_cBenchtest cBenchtest_160;\
+	# Copy file onto a separate folder to combine with TEST BM merged log
+	cp -r run_160_cBenchtest/power_measurement_merged_global.txt power_measurement_merged_global_te160.txt
+
+# Command to delete directory created during previous run
+clean_run_160_cBenchtest:
+	rm -rf run_160_cBenchtest
+
+# Create directory to split and merge data files : Fan Speed = 192
+dir_192_cBenchtest:
+	mkdir run_192_cBenchtest;\
+	cd run_192_cBenchtest;\
+	cp -r $(FILEPATH_N192) .;\
+	cd ..;\
+	# Splitting .dat into individual BM+freq logs
+	python3.6 splitter_freq.py $(FILE_N192) run_192_cBenchtest;\
+	# Merging all BM+freq into one global merged log
+	python3.6 $(MERGER_SCRIPT) run_192_cBenchtest cBenchtest_192;\
+	# Copy file onto a separate folder to combine with TEST BM merged log
+	cp -r run_192_cBenchtest/power_measurement_merged_global.txt power_measurement_merged_global_te192.txt
+
+# Command to delete directory created during previous run
+clean_run_192_cBenchtest:
+	rm -rf run_192_cBenchtest
+
+# Create directory to split and merge data files : Fan Speed = 32
+dir_255_cBenchtest:
+	mkdir run_255_cBenchtest;\
+	cd run_255_cBenchtest;\
+	cp -r $(FILEPATH_N255) .;\
+	cd ..;\
+	# Splitting .dat into individual BM+freq logs
+	python3.6 splitter_freq.py $(FILE_N255) run_255_cBenchtest;\
+	# Merging all BM+freq into one global merged log
+	python3.6 $(MERGER_SCRIPT) run_255_cBenchtest cBenchtest_255;\
+	# Copy file onto a separate folder to combine with TEST BM merged log
+	cp -r run_255_cBenchtest/power_measurement_merged_global.txt power_measurement_merged_global_te255.txt
+
+# Command to delete directory created during previous run
+clean_run_255_cBenchtest:
+	rm -rf run_255_cBenchtest
+
+# Create separate directory to merge test and train BM logs - fan speed : 0
+create_run_0_dir:
+	mkdir run_0;\
+	mv power_measurement_merged_global_te0.txt run_0/power_measurement_merged_global_te0.txt;\
+	mv power_measurement_merged_global_tr0.txt run_0/power_measurement_merged_global_tr0.txt;\
+	echo "\n\t Merging Power Logs... \n";\
+	cd run_0;\
+	cp -r power_measurement_merged_global_tr0.txt power_measurement_merged_global.txt;\
+	cat power_measurement_merged_global_te0.txt >> power_measurement_merged_global.txt;\
+	echo "\n\t Merging Power Logs...DONE \n";\
+
+clean_run_0_dir:
+	rm -rf run_0
+
+# Create separate directory to merge test and train BM logs - fan speed : 32
+create_run_32_dir:
+	mkdir run_32;\
+	mv power_measurement_merged_global_te32.txt run_32/power_measurement_merged_global_te32.txt;\
+	mv power_measurement_merged_global_tr32.txt run_32/power_measurement_merged_global_tr32.txt;\
+	echo "\n\t Merging Power Logs... \n";\
+	cd run_32;\
+	cp -r power_measurement_merged_global_tr32.txt power_measurement_merged_global.txt;\
+	cat power_measurement_merged_global_te32.txt >> power_measurement_merged_global.txt;\
+	echo "\n\t Merging Power Logs...DONE \n";\
+
+clean_run_32_dir:
+	rm -rf run_32
+
+# Create separate directory to merge test and train BM logs - fan speed : 64
+create_run_64_dir:
+	mkdir run_64;\
+	mv power_measurement_merged_global_te64.txt run_64/power_measurement_merged_global_te64.txt;\
+	mv power_measurement_merged_global_tr64.txt run_64/power_measurement_merged_global_tr64.txt;\
+	echo "\n\t Merging Power Logs... \n";\
+	cd run_64;\
+	cp -r power_measurement_merged_global_tr64.txt power_measurement_merged_global.txt;\
+	cat power_measurement_merged_global_te64.txt >> power_measurement_merged_global.txt;\
+	echo "\n\t Merging Power Logs...DONE \n";\
+
+clean_run_64_dir:
+	rm -rf run_64
+
+# Create separate directory to merge test and train BM logs - fan speed : 128
+create_run_128_dir:
+	mkdir run_128;\
+	mv power_measurement_merged_global_te128.txt run_128/power_measurement_merged_global_te128.txt;\
+	mv power_measurement_merged_global_tr128.txt run_128/power_measurement_merged_global_tr128.txt;\
+	echo "\n\t Merging Power Logs... \n";\
+	cd run_128;\
+	cp -r power_measurement_merged_global_tr128.txt power_measurement_merged_global.txt;\
+	cat power_measurement_merged_global_te128.txt >> power_measurement_merged_global.txt;\
+	echo "\n\t Merging Power Logs...DONE \n";\
+
+clean_run_128_dir:
+	rm -rf run_128
+
+# Create separate directory to merge test and train BM logs - fan speed : 160
+create_run_160_dir:
+	mkdir run_160;\
+	mv power_measurement_merged_global_te160.txt run_160/power_measurement_merged_global_te160.txt;\
+	mv power_measurement_merged_global_tr160.txt run_160/power_measurement_merged_global_tr160.txt;\
+	echo "\n\t Merging Power Logs... \n";\
+	cd run_160;\
+	cp -r power_measurement_merged_global_tr160.txt power_measurement_merged_global.txt;\
+	cat power_measurement_merged_global_te160.txt >> power_measurement_merged_global.txt;\
+	echo "\n\t Merging Power Logs...DONE \n";\
+
+clean_run_160_dir:
+	rm -rf run_160
+
+# Create separate directory to merge test and train BM logs - fan speed : 192
+create_run_192_dir:
+	mkdir run_192;\
+	mv power_measurement_merged_global_te192.txt run_192/power_measurement_merged_global_te192.txt;\
+	mv power_measurement_merged_global_tr192.txt run_192/power_measurement_merged_global_tr192.txt;\
+	echo "\n\t Merging Power Logs... \n";\
+	cd run_192;\
+	cp -r power_measurement_merged_global_tr192.txt power_measurement_merged_global.txt;\
+	cat power_measurement_merged_global_te192.txt >> power_measurement_merged_global.txt;\
+	echo "\n\t Merging Power Logs...DONE \n";\
+
+clean_run_192_dir:
+	rm -rf run_192
+
+# Create separate directory to merge test and train BM logs - fan speed : 255
+create_run_255_dir:
+	mkdir run_255;\
+	mv power_measurement_merged_global_te255.txt run_255/power_measurement_merged_global_te255.txt;\
+	mv power_measurement_merged_global_tr255.txt run_255/power_measurement_merged_global_tr255.txt;\
+	echo "\n\t Merging Power Logs... \n";\
+	cd run_255;\
+	cp -r power_measurement_merged_global_tr255.txt power_measurement_merged_global.txt;\
+	cat power_measurement_merged_global_te255.txt >> power_measurement_merged_global.txt;\
+	echo "\n\t Merging Power Logs...DONE \n";\
+
+clean_run_255_dir:
+	rm -rf run_255
