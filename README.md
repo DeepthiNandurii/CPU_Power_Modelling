@@ -1,7 +1,7 @@
 # CPU_Power_Modelling
 # Power Modelling of ARM Cortex-A57 CPU on NVIDIA Jetson TX1
 
---------------------------------------------------------------------------------
+*******************************************************************************
 # Step 1: Data Collection (Requires NVIDIA Jetson TX1)
 1)  Go to Data_Collection/
 2)  Run the makefile to compile the files: 
@@ -10,7 +10,7 @@
             sudo ./pmon_cpu
 5)  Raw data file is dumped: 
             power_measurement_log_a57.dat
---------------------------------------------------------------------------------
+*******************************************************************************
 
 # Step 2: Post Processing (Offline)
 1)  Transfer the raw data file (.dat) obtained in step 1 onto another machine 
@@ -32,16 +32,16 @@
 8)  The concatenated file is fed to the script in the modeling and validation
     step.
 
-----------------------------------------------------------------------------------
+***********************************************************************************
 
 # Step 3: Power Modeling and Validation
 1)  Go to Modeling_and_Validation
 2)  Ensure the following files are present in the directory:
-	  # build_model.m
-	  # load_build_model.m
-	  # octave_makemodel.sh (Make it executable using chmod u+x
+	   build_model.m
+	   load_build_model.m
+	   octave_makemodel.sh (Make it executable using chmod u+x
     octave_makemodel.sh).
-	  # benchmark_split.txt
+	   benchmark_split.txt
 3)  Generate and Validate the power model by launching the command: 
             make make_cpu_model
 4)  The model details can be output into an output log using the -s option.
