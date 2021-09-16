@@ -1,0 +1,20 @@
+
+# File			: 	Makefile_cpu
+# Authors		: 	Deepthi Nanduri/Jose Nunez-Yanez
+# Affiliation	: 	Department of Electrical and Electronic Engineering, University of Bristol
+# Description	:	Makefile used to launch benchmark run for data collection 
+# Used for 		: 	Quad-Core ARM Cortex A57 CPU present on Jetson TX1 board
+# Usage			: 	make -f Makefile_cpu <target>, where target can be cpu_pow or clean
+
+
+
+cpu_pow:
+	nvcc -x c++ -o pmon_cpu -O3 cpu_pow_mon.c utilities.c jtx1pow.c jtx1rate.c measure_cpu_pow.c monitoring.c -lcusparse
+
+clean: 
+	rm pmon_cpu
+	
+	
+	
+	
+
