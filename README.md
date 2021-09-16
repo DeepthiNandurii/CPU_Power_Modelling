@@ -37,10 +37,10 @@
 # Step 3: Power Modeling and Validation
 1)  Go to Modeling_and_Validation
 2)  Ensure the following files are present in the directory:
-	   build_model.m
-	   load_build_model.m
+	   build_model.m,
+	   load_build_model.m,
 	   octave_makemodel.sh (Make it executable using chmod u+x
-    octave_makemodel.sh).
+    octave_makemodel.sh), and
 	   benchmark_split.txt
 3)  Generate and Validate the power model by launching the command: 
             make make_cpu_model
