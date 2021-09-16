@@ -18,8 +18,8 @@
 2)  Go to Post_Processing/
 3)  Run the step which splits the .dat file into individual BM+Freq logs using: 
             python3.6 splitter_freq.py power_measurement_log_a57.dat
-4)  Merge the files obtained in step-3 into a global log using: 
-5)          python3.6 global_merger_nvidia.py
+4)  Merge the files obtained in step-3 into a global log using: 	
+	    python3.6 global_merger_nvidia.py
 6)  To complete steps 3 & 4, there are separate targets within the
     Makefile_split_and_merge_new such as: 
             make -f Makefile_split_and_merge_new dir_0_cBenchtrain 
