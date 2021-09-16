@@ -41,7 +41,7 @@
 	   load_build_model.m,
 	   octave_makemodel.sh (Make it executable using chmod u+x
     octave_makemodel.sh), and
-	   benchmark_split.txt
+	   benchmark_split.txt.
 3)  Generate and Validate the power model by launching the command: 
             make make_cpu_model
 4)  The model details can be output into an output log using the -s option.
